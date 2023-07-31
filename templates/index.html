@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content%}
+
+<br><br>
+
+<div class="row">
+    <a href="#" class="btn col-md-4 btn-primary">
+        Register a new Invoice <span class="badge text-bg-secondary"></span>
+    </a>
+
+    <a href="#" class="btn col-md-4">
+        Register a new Invoice <span class="badge text-bg-secondary"></span>
+    </a>
+
+    <a href="{% url 'add-customer' %}" class="btn col-md-4 btn-primary">
+        Register a new customer <span class="badge text-bg-secondary"></span>
+    </a>
+
+</div>
+
+<br><br>
+
+<div class="form-group">
+
+    <input id ="search" type="text" class="form-control" placeholder="Search">
+</div>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope ="col">#</th>
+            <th scope ="col">CUSTOMERS NAME</th>
+            <th scope ="col">DATE</th>
+            <th scope ="col">TOTAL</th>
+            <th scope ="col">PAID</th>
+            <th scope ="col">TYPE OF INVOICE</th>
+            <th scope ="col">ACTION</th>
+           </tr>
+
+        </thead>
+
+        <tbody id="myTable">
+            {% if invoices %}
+
+            {% for facture in invoices %}
+
+            <tr>
+                <th scope ="row">{{ facture.pk }}</th>
+                <th>{{ facture.customer.name }}</th>
+                <td>{{facture.invoice_date_time}}</td>
+                <td>{{ facture.get_total }}</td>
+                <td>
+                    {% if facture.paid %}
+                    <img src="{% static 'images/icon-yes.svg' %}" alt="True">
+                    {% else %}
+                    <img src="{% static 'images/icon-no.svg' %}" alt="False">
+                    {% endif %}
+                </td>
+
+                <td>{{ facture.get_invoice_type_display  }}</td>
+                <td>
+                    <a href="" title="Detail" class="badge text-white bg-success">View</a>
+                    <button id="btn-invoice-sup" type="button" data-toggle="modal" data-target="#supprimer" class="badge text-white bg-danger" title="Supprimer" data-id="{{ facture.pk }}" 
+                    data-customer="{{ facture.customer.name}}"> Delete
+                    </button>
+
+                    <button id="btn-invoice-mod" type="button" data-toggle="modal" data-target="#Modifier" class="badge text-white bg-warning" title="Modifier" data-id="{{ facture.pk }}" 
+                    data-customer="{{ facture.customer.name}}"> Modify
+                    </button>
+                </td>
+            </tr>
+
+            {% endfor %}
+
+            {% else %}
+
+            <p class="text-center text-white">No invoice found</p>
+            {% endif %}
+
+        </tbody>
+
+    </table>
+</div>
+
+<!--Modal Modifier-->
+
+<div class="modal fade " id="Modifier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="True">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title text-dark text-center" id="exampleModalLabel">Modifier</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="True">&times</span>
+
+                </button>
+            </div>
+           <form method="post">
+            {% csrf_token %}
+
+            <div class="modal-body">
+
+                <input name="id_modified" type="hidden" id="id_modified">
+                <label id="label_id" class="text-dark checkbox-inline"><strong id="strong_id">This bill has been paid ?</strong></label>
+
+                <input type="radio" name="modified" id="html" value="True">
+                <label class="text-white bg-primary" for="html">Yes</label>
+
+                <input type="radio" name="modified" id="css" value="False">
+                <label class="text-white bg-danger" for="css">No</label>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                 <button type="submit" class="btn-primary">Save</button>
+            </div>
+           </form>
+        </div>
+    </div>
+</div>
+<!--End Modal-->
+
+<!--Modal Suppression-->
+<div class="modal fade " id="supprimer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="True">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title text-dark text-center" id="exampleModalLabel">Delete Invoice</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="True">&times</span>
+
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                <input name="id_supprimer" type="hidden" id="id_supprimer">
+                <label id="label_id_s" class="text-dark checkbox-inline"><strong id="strong_id_s">Are you sure you want to delete the invoice ?</strong></label>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                 <button type="submit" class="btn-danger">Delete</button>
+            </div>
+           </form>
+        </div>
+    </div>
+</div>
+<!--End Modal-->
+
+
+
+{% endblock content %}
